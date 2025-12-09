@@ -153,23 +153,31 @@ export default class WavedromBlock implements BlockTool {
     previewWrapper.appendChild(preview);
     previewWrapper.appendChild(errorEl);
 
-    const editor = make('div', [this.css.editor]);
-    const textarea = document.createElement('textarea');
-    textarea.className = this.css.textarea;
-    textarea.value = this.data.code || '';
-    textarea.spellcheck = false;
-    textarea.readOnly = this.readOnly;
-
-    editor.appendChild(textarea);
-
     container.appendChild(previewWrapper);
-    container.appendChild(editor);
+
+    // 仅在可编辑模式下渲染底部的 JSON 编辑区域；
+    // 只读模式下只展示上方图形预览。
+    let textarea: HTMLTextAreaElement | null = null;
+    if (!this.readOnly) {
+      const editor = make('div', [this.css.editor]);
+      textarea = document.createElement('textarea');
+      textarea.className = this.css.textarea;
+      textarea.value = this.data.code || '';
+      textarea.spellcheck = false;
+      textarea.readOnly = false;
+
+      editor.appendChild(textarea);
+      container.appendChild(editor);
+    }
 
     const applyPreview = () => {
       if (!preview || !errorEl) {
         return;
       }
-      const raw = textarea.value || '';
+
+      // 只读模式下直接使用 this.data.code 渲染；
+      // 可编辑模式下使用 textarea 当前内容。
+      const raw = textarea ? textarea.value || '' : this.data.code || '';
       this.data.code = raw;
 
       preview.innerHTML = '';
@@ -229,7 +237,7 @@ export default class WavedromBlock implements BlockTool {
       // 忽略首次渲染异常，错误信息会写入 errorEl
     }
 
-    if (!this.readOnly) {
+    if (!this.readOnly && textarea) {
       textarea.addEventListener('input', () => {
         applyPreview();
       });
