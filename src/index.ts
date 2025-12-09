@@ -4,6 +4,7 @@ import { IconQuote } from '@codexteam/icons';
 import { make } from '@editorjs/dom';
 import type { API, BlockAPI, BlockTool, ToolConfig, SanitizerConfig } from '@editorjs/editorjs';
 import WaveDrom from 'wavedrom';
+import CodeFlask from 'codeflask';
 
 /**
  * WaveDrom 工具的配置
@@ -89,6 +90,9 @@ export default class WavedromBlock implements BlockTool {
   private data: WavedromData;
   private css: WavedromCSS;
   private config: WavedromConfig;
+  // 使用 CodeFlask 作为 WaveJSON 编辑器实例（仅在非只读模式下存在）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private editorInstance: any | null = null;
 
   constructor({ data, config, api, readOnly, block }: WavedromParams) {
     this.api = api;
@@ -153,33 +157,12 @@ export default class WavedromBlock implements BlockTool {
     previewWrapper.appendChild(preview);
     previewWrapper.appendChild(errorEl);
 
-    // 仅在可编辑模式下渲染上方的 JSON 编辑区域；
-    // 只读模式下只展示下方图形预览。
-    let textarea: HTMLTextAreaElement | null = null;
-    if (!this.readOnly) {
-      const editor = make('div', [this.css.editor]);
-      textarea = document.createElement('textarea');
-      textarea.className = this.css.textarea;
-      textarea.value = this.data.code || '';
-      textarea.spellcheck = false;
-      textarea.readOnly = false;
-
-      editor.appendChild(textarea);
-      container.appendChild(editor);
-    }
-
-    // 预览区域放在编辑区域下方
-    container.appendChild(previewWrapper);
-
     const applyPreview = () => {
       if (!preview || !errorEl) {
         return;
       }
 
-      // 只读模式下直接使用 this.data.code 渲染；
-      // 可编辑模式下使用 textarea 当前内容。
-      const raw = textarea ? textarea.value || '' : this.data.code || '';
-      this.data.code = raw;
+      const raw = this.data.code || '';
 
       preview.innerHTML = '';
       errorEl.textContent = '';
@@ -231,6 +214,21 @@ export default class WavedromBlock implements BlockTool {
       }
     };
 
+    // 仅在可编辑模式下渲染上方的 WaveJSON 编辑区域；
+    // 只读模式下只展示下方图形预览。
+    let editorRoot: HTMLDivElement | null = null;
+    if (!this.readOnly) {
+      const editor = make('div', [this.css.editor]);
+      editorRoot = document.createElement('div');
+      editorRoot.className = this.css.textarea;
+
+      editor.appendChild(editorRoot);
+      container.appendChild(editor);
+    }
+
+    // 预览区域放在编辑区域下方
+    container.appendChild(previewWrapper);
+
     // 初始渲染一次
     try {
       applyPreview();
@@ -238,10 +236,24 @@ export default class WavedromBlock implements BlockTool {
       // 忽略首次渲染异常，错误信息会写入 errorEl
     }
 
-    if (!this.readOnly && textarea) {
-      textarea.addEventListener('input', () => {
+    if (!this.readOnly && editorRoot) {
+      // 使用 CodeFlask 作为轻量代码编辑器，高亮 WaveJSON（按 JavaScript 语法高亮即可）
+      const flask = new CodeFlask(editorRoot, {
+        language: 'js',
+        lineNumbers: false,
+        readonly: this.readOnly,
+        defaultTheme: true,
+      });
+
+      this.editorInstance = flask;
+
+      flask.onUpdate((code: string) => {
+        this.data.code = code;
         applyPreview();
       });
+
+      // 用当前数据初始化编辑器内容
+      flask.updateCode(this.data.code || '');
     }
 
     // 根据配置调整预览高度（最小 160px）
@@ -253,11 +265,9 @@ export default class WavedromBlock implements BlockTool {
     return container;
   }
 
-  public save(wrapper: HTMLDivElement): WavedromData {
-    const textarea = wrapper.querySelector(`.${this.css.textarea}`) as HTMLTextAreaElement | null;
-
+  public save(_wrapper: HTMLDivElement): WavedromData {
     return {
-      code: textarea?.value ?? this.data.code ?? '',
+      code: this.data.code ?? '',
     };
   }
 
