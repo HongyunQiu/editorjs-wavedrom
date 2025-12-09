@@ -1,0 +1,55 @@
+{
+    "name": "@editorjs/wavedrom",
+    "version": "0.1.0",
+    "keywords": [
+      "codex editor",
+      "wavedrom",
+      "wavejson",
+      "editor.js",
+      "editorjs"
+    ],
+    "description": "WaveDrom WaveJSON preview Block Tool for Editor.js (QNotes integration)",
+    "license": "MIT",
+    "repository": "https://github.com/wavedrom/wavedrom",
+    "files": [
+      "dist"
+    ],
+    "main": "./dist/wavedrom.umd.js",
+    "module": "./dist/wavedrom.mjs",
+    "exports": {
+      ".": {
+        "import": "./dist/wavedrom.mjs",
+        "require": "./dist/wavedrom.umd.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
+    "types": "./dist/index.d.ts",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "preview": "vite preview",
+      "lint": "eslint",
+      "lint:errors": "eslint --quiet",
+      "lint:fix": "eslint --fix"
+    },
+    "author": {
+      "name": "QNotes",
+      "email": "dev@qnotes.local"
+    },
+    "devDependencies": {
+      "@editorjs/editorjs": "^2.30.7",
+      "eslint": "^9.15.0",
+      "eslint-config-codex": "^2.0.3",
+      "typescript-eslint": "^8.15.0",
+      "vite": "^6.4.1",
+      "vite-plugin-css-injected-by-js": "^3.3.0",
+      "vite-plugin-dts": "^4.5.4"
+    },
+    "dependencies": {
+      "@codexteam/icons": "^0.3.2",
+      "@editorjs/dom": "^0.0.5",
+      "wavedrom": "^3.1.0"
+    }
+  }
+  
+  

@@ -1,0 +1,65 @@
+.cdx-wavedrom {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #e2e5ec;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .cdx-wavedrom__preview-wrapper {
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    overflow: auto;
+    padding: 8px 10px;
+  }
+  
+  .cdx-wavedrom__preview {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .cdx-wavedrom__error {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #b91c1c;
+  }
+  
+  .cdx-wavedrom__editor {
+    margin-top: 4px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background-color: #0b1120;
+    overflow: hidden;
+  }
+  
+  .cdx-wavedrom__textarea {
+    display: block;
+    width: 100%;
+    min-height: 140px;
+    padding: 8px 10px;
+    border: none;
+    outline: none;
+    resize: vertical;
+    box-sizing: border-box;
+  
+    background-color: transparent;
+    color: #e5e7eb;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    tab-size: 2;
+  }
+  
+  .cdx-wavedrom__textarea::placeholder {
+    color: #6b7280;
+  }
+  
+  .cdx-wavedrom__textarea:read-only {
+    cursor: default;
+    opacity: 0.8;
+  }
+  
