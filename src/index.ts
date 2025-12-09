@@ -77,8 +77,8 @@ function parseWaveJSON(source: string): unknown {
 /**
  * Editor.js WaveDrom BlockTool
  *
- * 上半部分：波形图 SVG 预览
- * 下半部分：WaveJSON 文本编辑区域
+ * 上半部分：WaveJSON 文本编辑区域
+ * 下半部分：波形图 SVG 预览
  */
 export default class WavedromBlock implements BlockTool {
   private api: API;
@@ -153,10 +153,8 @@ export default class WavedromBlock implements BlockTool {
     previewWrapper.appendChild(preview);
     previewWrapper.appendChild(errorEl);
 
-    container.appendChild(previewWrapper);
-
-    // 仅在可编辑模式下渲染底部的 JSON 编辑区域；
-    // 只读模式下只展示上方图形预览。
+    // 仅在可编辑模式下渲染上方的 JSON 编辑区域；
+    // 只读模式下只展示下方图形预览。
     let textarea: HTMLTextAreaElement | null = null;
     if (!this.readOnly) {
       const editor = make('div', [this.css.editor]);
@@ -169,6 +167,9 @@ export default class WavedromBlock implements BlockTool {
       editor.appendChild(textarea);
       container.appendChild(editor);
     }
+
+    // 预览区域放在编辑区域下方
+    container.appendChild(previewWrapper);
 
     const applyPreview = () => {
       if (!preview || !errorEl) {
@@ -186,7 +187,7 @@ export default class WavedromBlock implements BlockTool {
       const trimmed = raw.trim();
       if (!trimmed) {
         const placeholder = make('div', [], {
-          innerHTML: this.api.i18n.t('输入 WaveJSON 以渲染波形（示例见下方编辑区）'),
+          innerHTML: this.api.i18n.t('输入 WaveJSON 以渲染波形（示例见上方编辑区）'),
         });
         preview.appendChild(placeholder);
         return;
