@@ -16,6 +16,16 @@
     overflow: auto;
     padding: 8px 10px;
   }
+
+  /* 只读模式下尽量不要出现内部滚动条（高度会自动按内容调整） */
+  .cdx-wavedrom__preview-wrapper[data-readonly='true'] {
+    overflow: hidden;
+  }
+
+  /* 编辑模式下如果开启“按 SVG 实际高度 fit”，也不希望出现内部滚动条 */
+  .cdx-wavedrom__preview-wrapper[data-fit='true'] {
+    overflow: hidden;
+  }
   
   .cdx-wavedrom__preview {
     width: 100%;
@@ -36,6 +46,37 @@
     overflow: hidden;
     position: relative;
     min-height: 140px;
+  }
+
+  .cdx-wavedrom__splitter {
+    height: 10px;
+    cursor: row-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: transparent;
+  }
+
+  .cdx-wavedrom__splitter::before {
+    content: "";
+    width: 44px;
+    height: 3px;
+    border-radius: 999px;
+    background: #d1d5db;
+  }
+
+  .cdx-wavedrom__splitter:hover::before {
+    background: #9ca3af;
+  }
+
+  .cdx-wavedrom__splitter.is-dragging::before {
+    background: #6b7280;
+  }
+
+  .cdx-wavedrom--dragging,
+  .cdx-wavedrom--dragging * {
+    user-select: none;
   }
   
   .cdx-wavedrom__textarea {
